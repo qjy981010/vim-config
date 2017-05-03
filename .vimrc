@@ -28,13 +28,20 @@ set magic
 
 set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ %{&encoding}\ %c:%l/%L%)\
 
-"Ctrl+C 复制
-vnoremap <C-c> "+y
+
+" http://blog.fooleap.org/using-vim-with-clipboard-on-archlinux.html#id-注意事项
+" archlinux 有错找上面的网址
+"
+" Ctrl+A 全选
+map <C-A> ggVG$"+y
+
+" Ctrl+C 复制
+vnoremap <C-c> "+y    
 
 " Ctrl+v 粘贴
 map <C-v> "+p
 imap <C-v> <esc>"+pa
-vmap <C-v> d"+P
+vmap <C-v> d"+p
 
 " 为特定文件类型载入相关缩进文件 
 filetype indent on 
@@ -65,20 +72,7 @@ highlight StatusLineNC guifg=Gray guibg=White
 :inoremap ' ''<ESC>i
 :inoremap ` ``<ESC>i
 
-" 输入一个字符时，如果下一个字符也是括号，则删除它，避免出现重复字符
-function! RemoveNextDoubleChar(char)
-	let l:line = getline(".")
-	let l:next_char = l:line[col(".")] " 取得当前光标后一个字符
 
-	if a:char == l:next_char
-		execute "normal! l"
-	else
-		execute "normal! i" . a:char . ""
-	end
-endfunction
-inoremap ) <ESC>:call RemoveNextDoubleChar(')')<CR>a
-inoremap ] <ESC>:call RemoveNextDoubleChar(']')<CR>a
-inoremap } <ESC>:call RemoveNextDoubleChar('}')<CR>a
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
 " 文件设置 
@@ -220,39 +214,35 @@ autocmd BufReadPost *
 \ endif 
 endif "has("autocmd") 
 
-" F5编译和运行C程序，F6编译和运行C++程序 
-" 请注意，下述代码在windows下使用会报错 
-" 需要去掉./这两个字符 
-
-"按F4运行python
-map <F4> :call RunPython()<CR>
-function! RunPython()
-exec "w"
-exec "!python ./%"
-endfunction
-
-" C的编译和运行 
-map <F5> :call CompileRunGcc()<CR> 
-func! CompileRunGcc() 
-exec "w" 
-exec "!gcc % -o %<" 
-exec "! ./%<" 
-endfunc 
-
-" C++的编译和运行 
-map <F6> :call CompileRunGpp()<CR> 
-func! CompileRunGpp() 
-exec "w" 
-exec "!g++ % -o %<" 
-exec "! ./%<" 
-endfunc 
-
-" shell 的运行
-map <F7> :call Runshell()<CR>
-func! Runshell()
-    exec "w"
-    exec "!chmod 755 %"
-    exec "! ./%"
+""""""""""""""""""""""""""""""""""""""""""""""""'""""""""'""""""""""""""""""""
+"""""""""""""""""from https://github.com/ma6174/vim 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 按F5编译运行
+map <F5> :call CompileRunGcc()<CR>
+func! CompileRunGcc()
+	exec "w"
+	if &filetype == 'c'
+		exec "!g++ % -o %<"
+		exec "!time ./%<"
+	elseif &filetype == 'cpp'
+		exec "!g++ % -std=c++11 -o %<"
+		exec "!time ./%<"
+	elseif &filetype == 'java' 
+		exec "!javac %" 
+		exec "!time java %<"
+	elseif &filetype == 'sh'
+		:!time bash %
+	elseif &filetype == 'python'
+		exec "!time python %"
+    elseif &filetype == 'html'
+        exec "!firefox % &"
+    elseif &filetype == 'go'
+"        exec "!go build %<"
+        exec "!time go run %"
+    elseif &filetype == 'mkd'
+        exec "!~/.vim/markdown.pl % > %.html &"
+        exec "!firefox %.html &"
+	endif
 endfunc
 
 "C,C++的调试
@@ -262,6 +252,33 @@ func! Rungdb()
     exec "!g++ % -g -o %<"
     exec "!gdb ./%<"
 endfunc
+
+"代码格式优化化
+map <F6> :call FormartSrc()<CR><CR>
+"定义FormartSrc()
+func FormartSrc()
+    exec "w"
+    if &filetype == 'c'
+        exec "!astyle --style=ansi -a --suffix=none %"
+    elseif &filetype == 'cpp' || &filetype == 'hpp'
+        exec "r !astyle --style=ansi --one-line=keep-statements -a --suffix=none %> /dev/null 2>&1"
+    elseif &filetype == 'perl'
+        exec "!astyle --style=gnu --suffix=none %"
+    elseif &filetype == 'py'||&filetype == 'python'
+        exec "r !autopep8 -i --aggressive %"
+    elseif &filetype == 'java'
+        exec "!astyle --style=java --suffix=none %"
+    elseif &filetype == 'jsp'
+        exec "!astyle --style=gnu --suffix=none %"
+    elseif &filetype == 'xml'
+        exec "!astyle --style=gnu --suffix=none %"
+    else
+        exec "normal gg=G"
+        return
+    endif
+    exec "e! %"
+endfunc
+"结束定义FormartSrc
 
 " 每行超过80个字符用下划线标示
 au BufRead,BufNewFile *.asm,*.c,*.cpp,*.java,*.cs,*.sh,*.lua,*.pl,*.pm,*.py,*.rb,*.hs,*.vim 2match Underlined /.\%101v/
@@ -289,7 +306,6 @@ set laststatus=2
 set guifont=Source\ Code\ Pro\ for\ Powerline:h12 
 set showmode
 
-
 highlight clear SignColumn " SignColumn should match background
 highlight clear LineNr " Current line number row will have same background color in relative mode
 
@@ -299,6 +315,9 @@ hi CursorLine   cterm=NONE ctermbg=black ctermfg=NONE guibg=NONE guifg=NONE
 
 "智能补全
 set completeopt=longest,menu
+
+" 以普通用户打开只读文件时强制写入
+cmap w!! w !sudo tee > /dev/null %
 
 " 能够漂亮地显示.NFO文件 
 set encoding=utf-8 
@@ -349,13 +368,67 @@ endif
 
 set splitright
 
-"split navigations
+" split navigations
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""新文件标题
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"新建.c,.h,.sh,.java文件，自动插入文件头 
+autocmd BufNewFile *.cpp,*.[ch],*.sh,*.rb,*.java,*.py exec ":call SetTitle()" 
+""定义函数SetTitle，自动插入文件头 
+func SetTitle() 
+	"如果文件类型为.sh文件 
+	if &filetype == 'sh' 
+		call setline(1,"\#!/bin/bash") 
+		" call append(line("."), "") 
+    elseif &filetype == 'python'
+        call setline(1,"#!/usr/bin/env python")
+        call append(line("."),"# coding=utf-8")
+	    call append(line(".")+1, "") 
+
+    elseif &filetype == 'ruby'
+        call setline(1,"#!/usr/bin/env ruby")
+        call append(line("."),"# encoding: utf-8")
+	    call append(line(".")+1, "")
+
+"    elseif &filetype == 'mkd'
+"        call setline(1,"<head><meta charset=\"UTF-8\"></head>")
+	
+	endif
+	if expand("%:e") == 'cpp'
+		call setline(1, "#include<iostream>")
+		call append(line("."), "using namespace std;")
+		call append(line(".")+1, "")
+	endif
+	if &filetype == 'c'
+		call setline(1, "#include<stdio.h>")
+		call append(line("."), "")
+	endif
+	if expand("%:e") == 'h'
+		call setline(1, "#ifndef _".toupper(expand("%:r"))."_H")
+		call append(line("."), "#define _".toupper(expand("%:r"))."_H")
+		call append(line(".")+1, "#endif")
+	endif
+	if &filetype == 'java'
+		call setline(1,"public class ".expand("%:r"))
+		call append(line("."),"")
+	endif
+	"新建文件后，自动定位到文件末尾
+endfunc 
+autocmd BufNewFile * normal G
+
+function HeaderShell()
+call setline(1, "#!/bin/bash")
+normal G
+normal o
+normal o
+endf
+autocmd bufnewfile *.sh call HeaderShell()
 
 ""plugins=============================================================
 
@@ -377,6 +450,6 @@ let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
 let g:indentLine_char = '┆'  "│
 
-let g:UltiSnipsExpandTrigger="<C-a>"
+let g:UltiSnipsExpandTrigger="<C-d>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
