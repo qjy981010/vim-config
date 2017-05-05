@@ -317,7 +317,7 @@ hi CursorLine   cterm=NONE ctermbg=black ctermfg=NONE guibg=NONE guifg=NONE
 set completeopt=longest,menu
 
 " 以普通用户打开只读文件时强制写入
-cmap w!! w !sudo tee > /dev/null %
+cmap :w!! :w !sudo tee > /dev/null %
 
 " 能够漂亮地显示.NFO文件 
 set encoding=utf-8 
@@ -354,7 +354,6 @@ set foldmethod=indent " options: manual, indent, expr, syntax, diff, marker
 set foldlevel=99""
 
 set backspace=eol,start,indent               " Configure backspace so it acts as it should act"
-""let &colorcolumn="80,".join(range(120,999),",")
 let &colorcolumn="100"
 
 set tw=100
@@ -365,7 +364,7 @@ if filereadable(expand("~/.vimrc.bundles"))
       source ~/.vimrc.bundles
 endif
 
-
+" 默认在右侧打开新窗口
 set splitright
 
 " split navigations
@@ -432,6 +431,7 @@ autocmd bufnewfile *.sh call HeaderShell()
 
 ""plugins=============================================================
 
+" F1打开NERDTree
 let NERDChristmasTree=0
 let NERDTreeWinSize=35
 let NERDTreeChDirMode=2
@@ -446,9 +446,10 @@ let g:indent_guides_enable_on_vim_startup = 1
 hi IndentGuidesOdd  ctermbg=black
 hi IndentGuidesEven ctermbg=darkgrey
 
+
 let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
-let g:indentLine_char = '┆'  "│
+let g:indentLine_char = '┆' " '│' 备用  
 
 let g:UltiSnipsExpandTrigger="<C-d>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"

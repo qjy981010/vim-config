@@ -7,25 +7,32 @@
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
+
+# 将当前目录加入PATH环境变量，可以直接输入二进制文件名或shell文件名运行文件
 PATH=$PATH:.
 
-alias an="sudo pacman -S"
-alias shan="sudo pacman -R"
+# archlinux pacman 
+alias renew="sudo pacman -Syu"
+alias getit="sudo pacman -S"
+alias delit="sudo pacman -R"
 
 PS1='[\u@\h \W]\$ '
 
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-alias gongwangip='curl ipinfo.io'
+alias publicip='curl ipinfo.io'
 alias ll='ls -lh'
 alias sl='ls -lAh'
-alias ju='nohup jupyter notebook &'
+# jupyter notebook
+alias ju='nohup jupyter notebook > /dev/null &'
 alias ..='cd ../'
 export VISUAL="vim"
 
+# for powerline
 export TERM="screen-256color"
 . /usr/lib/python3.6/site-packages/powerline/bindings/bash/powerline.sh
 
+# 给man手册添加颜色
 man() {
     LESS_TERMCAP_md=$'\e[01;31m' \
     LESS_TERMCAP_me=$'\e[0m' \
@@ -35,8 +42,6 @@ man() {
     LESS_TERMCAP_us=$'\e[01;32m' \
     command man "$@"
 }
-alias update="sudo pacman -Syu"
-
 
 # Useful unarchiver!
 function extract () {
