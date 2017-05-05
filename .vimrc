@@ -429,6 +429,16 @@ let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
 let g:indentLine_char = '┆' " '│' 备用  
 
-let g:UltiSnipsExpandTrigger="<C-d>"
+" 将ultisnip补全映射为Ctrl-D，解决与YCM的冲突
+let g:UltiSnipsExpandTrigger="<C-z>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsJumpBackwardTrigger="<c-d>"
+
+" YcmCompleter {
+	" 引入，可以补全系统，以及python的第三方包
+    let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
+    let g:ycm_error_symbol = '>>'
+    let g:ycm_warning_symbol = '>*'
+	"直接触发自动补全
+	let g:ycm_key_invoke_completion = ''
+" }
