@@ -5,6 +5,9 @@
 set fenc=utf-8 
 set fencs=utf-8,usc-bom,euc-jp,gb18030,gbk,gb2312,cp936 
 
+" 以普通用户打开只读文件时强制写入
+cmap :w!! :w !sudo tee > /dev/null %
+
 " 不要使用vi的键盘模式，而是vim自己的 
 set nocompatible 
 
@@ -97,9 +100,6 @@ set rulerformat=%20(%2*%<%f%=\ %m%r\ %3l\ %c\ %p%%%)
 " 使回格键（backspace）正常处理indent, eol, start等 
 set backspace=2 
 
-" 允许backspace和光标键跨越行边界 
-set whichwrap+=<,>,h,l 
-
 " 可以在buffer的任何地方使用鼠标（类似office中在工作区双击鼠标定位） 
 set mouse=a 
 set selection=exclusive 
@@ -136,9 +136,6 @@ set nohlsearch
 
 " 在搜索时，输入的词句的逐字符高亮（类似firefox的搜索） 
 set incsearch 
-
-" 输入:set list命令是应该显示些啥？ 
-set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$ 
 
 " 光标移动到buffer的顶部和底部时保持3行距离 
 set scrolloff=4 
@@ -202,7 +199,6 @@ set number
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
 " Autocommands 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
-" 只在下列文件类型被侦测到的时候显示行号，普通文本文件不显示 
 
 if has("autocmd") 
 autocmd FileType xml,html vmap <C-o> <ESC>'<i<!--<ESC>o<ESC>'>o--> 
@@ -297,10 +293,7 @@ set clipboard+=unnamed
 
 " powerline所需配置
 set rtp+=/usr/local/lib/python3.6/site-packages/powerline/bindings/bash/powerline.sh
-
-set nocompatible
 set t_Co=256
-
 let g:minBufExplForceSyntaxEnable = 1
 set laststatus=2 
 set guifont=Source\ Code\ Pro\ for\ Powerline:h12 
@@ -316,9 +309,6 @@ hi CursorLine   cterm=NONE ctermbg=black ctermfg=NONE guibg=NONE guifg=NONE
 "智能补全
 set completeopt=longest,menu
 
-" 以普通用户打开只读文件时强制写入
-cmap :w!! :w !sudo tee > /dev/null %
-
 " 能够漂亮地显示.NFO文件 
 set encoding=utf-8 
 function! SetFileEncodings(encodings) 
@@ -333,21 +323,6 @@ endfunction
 au BufReadPre *.nfo call SetFileEncodings('cp437')|set ambiwidth=single au BufReadPost *.nfo call RestoreFileEncodings() 
 
 
-" ==================================================================================================
-" ==================================================================================================
-"
-" https://github.com/ruanyl/bigvim/blob/master/vimrc
-
-"Load plugins
-if filereadable(expand("~/.vim/vimrc.before"))
-  source ~/.vim/vimrc.before
-endif
-
-"Load plugins
-if filereadable(expand("~/.vim/vimrc.bundles"))
-    source ~/.vim/vimrc.bundles
-endif
-
 set shortmess=atI         " do not show initial page"
 set foldenable        " code folding
 set foldmethod=indent " options: manual, indent, expr, syntax, diff, marker
@@ -359,7 +334,7 @@ let &colorcolumn="100"
 set tw=100
 set textwidth=100
 
-
+"Load plugins
 if filereadable(expand("~/.vimrc.bundles"))
       source ~/.vimrc.bundles
 endif
@@ -374,9 +349,9 @@ nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""新文件标题
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""
+""""""""""""""新文件标题""""""""""""""
+""""""""""""""""""""""""""""""""""""""
 "新建.c,.h,.sh,.java文件，自动插入文件头 
 autocmd BufNewFile *.cpp,*.[ch],*.sh,*.rb,*.java,*.py exec ":call SetTitle()" 
 ""定义函数SetTitle，自动插入文件头 
@@ -429,6 +404,9 @@ normal o
 endf
 autocmd bufnewfile *.sh call HeaderShell()
 
+
+""plugins=============================================================
+" 插件配置
 ""plugins=============================================================
 
 " F1打开NERDTree
