@@ -60,8 +60,8 @@ syntax enable
 syntax on 
 
 " 高亮字符，让其不受100列限制 
-:highlight OverLength ctermbg=red ctermfg=white guibg=red guifg=white 
-:match OverLength '\%101v.*' 
+"":highlight OverLength ctermbg=red ctermfg=white guibg=red guifg=white 
+"":match OverLength '\%101v.*' 
 
 " 状态行颜色 
 highlight StatusLine guifg=SlateBlue guibg=Yellow 
@@ -126,7 +126,7 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\
 set showmatch 
 
 " 匹配括号高亮的时间（单位是十分之一秒） 
-set matchtime=5 
+set matchtime=0
 
 " 在搜索的时候忽略大小写 
 set ignorecase 
@@ -188,7 +188,7 @@ set shiftwidth=4
 autocmd FileType python set expandtab 
 
 " 自动换行 
-set wrap
+" set wrap
 
 set nobackup
 set noswapfile
@@ -277,7 +277,7 @@ endfunc
 "结束定义FormartSrc
 
 " 每行超过80个字符用下划线标示
-au BufRead,BufNewFile *.asm,*.c,*.cpp,*.java,*.cs,*.sh,*.lua,*.pl,*.pm,*.py,*.rb,*.hs,*.vim 2match Underlined /.\%101v/
+" au BufRead,BufNewFile *.asm,*.c,*.cpp,*.java,*.cs,*.sh,*.lua,*.pl,*.pm,*.py,*.rb,*.hs,*.vim 2match Underlined /.\%101v/
 
 " 设置当文件被改动时自动载入
 set autoread
@@ -298,8 +298,9 @@ let g:minBufExplForceSyntaxEnable = 1
 set laststatus=2 
 set guifont=Source\ Code\ Pro\ for\ Powerline:h12 
 set showmode
+let g:powerline_pycmd="py3"
 
-highlight clear SignColumn " SignColumn should match background
+""highlight clear SignColumn " SignColumn should match background
 highlight clear LineNr " Current line number row will have same background color in relative mode
 
 "突出当前行
@@ -324,15 +325,15 @@ au BufReadPre *.nfo call SetFileEncodings('cp437')|set ambiwidth=single au BufRe
 
 
 set shortmess=atI         " do not show initial page"
-set foldenable        " code folding
-set foldmethod=indent " options: manual, indent, expr, syntax, diff, marker
-set foldlevel=99""
+""set foldenable        " code folding
+""set foldmethod=indent " options: manual, indent, expr, syntax, diff, marker
+""set foldlevel=99""
 
 set backspace=eol,start,indent               " Configure backspace so it acts as it should act"
-let &colorcolumn="100"
+""let &colorcolumn="100"
 
-set tw=100
-set textwidth=100
+""set tw=100
+""set textwidth=100
 
 "Load plugins
 if filereadable(expand("~/.vimrc.bundles"))
@@ -376,16 +377,17 @@ func SetTitle()
 	endif
 	if expand("%:e") == 'cpp'
 		call setline(1, "#include<iostream>")
-		call append(line("."), "using namespace std;")
-		call append(line(".")+1, "")
+		call append(line("."), "")
+		call append(line(".")+1, "using namespace std;")
+		call append(line(".")+2, "")
 	endif
 	if &filetype == 'c'
 		call setline(1, "#include<stdio.h>")
 		call append(line("."), "")
 	endif
 	if expand("%:e") == 'h'
-		call setline(1, "#ifndef _".toupper(expand("%:r"))."_H")
-		call append(line("."), "#define _".toupper(expand("%:r"))."_H")
+		call setline(1, "#ifndef ".toupper(expand("%:r"))."_H_")
+		call append(line("."), "#define ".toupper(expand("%:r"))."_H_")
 		call append(line(".")+1, "#endif")
 	endif
 	if &filetype == 'java'
@@ -424,9 +426,6 @@ let g:indent_guides_enable_on_vim_startup = 1
 hi IndentGuidesOdd  ctermbg=black
 hi IndentGuidesEven ctermbg=darkgrey
 
-
-let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
-
 let g:indentLine_char = '┆' " '│' 备用  
 
 " 将ultisnip补全映射为Ctrl-D，解决与YCM的冲突
@@ -434,11 +433,8 @@ let g:UltiSnipsExpandTrigger="<C-z>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-d>"
 
-" YcmCompleter {
-	" 引入，可以补全系统，以及python的第三方包
-    let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
-    let g:ycm_error_symbol = '>>'
-    let g:ycm_warning_symbol = '>*'
-	"直接触发自动补全
-	let g:ycm_key_invoke_completion = ''
-" }
+" 引入，可以补全系统，以及python的第三方包
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+"直接触发自动补全
+let g:ycm_key_invoke_completion = ''
+let g:ycm_show_diagnostics_ui = 0

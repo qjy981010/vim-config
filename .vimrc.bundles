@@ -11,10 +11,11 @@ if &compatible
   "
   " " Define bundles via Github repos
 Bundle 'scrooloose/nerdtree'
-Bundle 'luochen1990/rainbow'
+"Bundle 'luochen1990/rainbow'
 Bundle 'honza/vim-snippets'
 Bundle 'SirVer/ultisnips'
 "Bundle 'spf13/spf13-vim'
+"Bundle 'Valloric/YouCompleteMe'
 Bundle 'Yggdroot/indentLine'
 if filereadable(expand("~/.vimrc.bundles.local"))
 source ~/.vimrc.bundles.local
