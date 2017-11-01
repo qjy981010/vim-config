@@ -35,7 +35,6 @@ alias lg='ls -A |grep -i'
 alias df='df -Th'
 alias free='free -h'
 alias py='ipython'
-alias gototim="cd './Documents/Tencent Files/1114943038/FileRecv/MobileFile/'"
 export VISUAL="vim"
 
 # for powerline
@@ -83,12 +82,10 @@ function extract () {
         fi
 }
 
-if [ -z $CUDA_VISIBLE_DEVICES ]
-then
-	sudo updatedb
-fi
-
 timedatectl set-ntp true
-export CUDA_VISIBLE_DEVICES=0
-mentohust -u U201614552 -p qseft111494 -b 3 -w > /dev/null
-fish
+
+export CUDA_VISIBLE_DEVICES=0 # fix some bug for tensorflow
+
+mentohust -u xxx -p xxx -b 3 -w > /dev/null
+
+fish # use fish to work, but it's not the default shell, type 'exit' to use bash
